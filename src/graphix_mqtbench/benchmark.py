@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,9 @@ from mqt.bench import get_benchmark_indep
 
 from graphix_mqtbench._generated_benchmarks_enum import BenchmarkName
 from graphix_mqtbench.converter import convert
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 
 @dataclass
@@ -70,10 +74,28 @@ class Benchmark:
         df = pd.DataFrame([data])
 
         if beautify:
-            return beautify_df(df)
+            return beautify_benchmark_df(df)
         return df
 
 
+@dataclass
+class BenchmarkResult:
+    benchmark: Benchmark
+    backend_name: str
+    stats: pd.DataFrame
+
+    @staticmethod
+    def from_dict(data: Mapping[str, Any]) -> BenchmarkResult:
+        benchmark_name = BenchmarkName[data["params"]["benchmark_name"].upper()]
+        nqubits = int(data["params"]["nqubits"])
+        benchmark = Benchmark(benchmark_name, nqubits)
+        backend_name = data["extra_info"]["backend_name"]
+        stats_df = pd.DataFrame([data["stats"]])
+
+        return BenchmarkResult(benchmark, backend_name, stats_df)
+
+
+# TODO: better to take a lists of benchmarks
 def characterize_benchmarks(nqubits: int) -> pd.DataFrame:
     rows = []
     for bench in BenchmarkName:
@@ -98,16 +120,16 @@ def characterize_benchmarks(nqubits: int) -> pd.DataFrame:
 
         rows.append(df)
 
-    return beautify_df(pd.concat(rows, ignore_index=True, sort=False))
+    return beautify_benchmark_df(pd.concat(rows, ignore_index=True, sort=False))
 
 
-def beautify_df(df: pd.DataFrame) -> pd.DataFrame:
+def beautify_benchmark_df(df: pd.DataFrame) -> pd.DataFrame:
     new_columns = []
 
     for col in df.columns:
         if col != "benchmark":
             df[col] = df[col].astype("Int64")
-        if col in ["benchmark", "nqubits", "n_gates"]:
+        if col in {"benchmark", "nqubits", "n_gates"}:
             new_columns.append(("Circuit", col))
         elif col.startswith("transp-"):
             new_columns.append(("After transpilation", col.replace("transp-", "")))
@@ -119,7 +141,7 @@ def beautify_df(df: pd.DataFrame) -> pd.DataFrame:
             new_columns.append(("other", col))
 
     df.columns = pd.MultiIndex.from_tuples(new_columns)
-    df = df.rename(
+    return df.rename(
         columns={
             "n_commands": "# Commands",
             "max_space": "Max Space",
@@ -130,4 +152,18 @@ def beautify_df(df: pd.DataFrame) -> pd.DataFrame:
         level=1,
     )
 
-    return df
+
+def combine_benchmark_results(results: Sequence[BenchmarkResult]) -> pd.DataFrame:
+    rows = []
+
+    for r in results:
+        df = r.stats.copy()
+        df["Benchmark"] = r.benchmark.name.value
+        df["# Qubits"] = r.benchmark.nqubits
+        df["Backend"] = r.backend_name
+        rows.append(df)
+
+    long_df = pd.concat(rows, ignore_index=True)
+
+    # `swaplevel(axis=1)` places `Backend` above data.
+    return long_df.pivot_table(index=["Benchmark", "# Qubits"], columns="Backend", aggfunc="first").swaplevel(axis=1)
