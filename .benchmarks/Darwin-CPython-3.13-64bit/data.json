@@ -29,13 +29,12 @@
         }
     },
     "commit_info": {
-        "id": "unknown",
-        "time": null,
-        "author_time": null,
-        "dirty": false,
-        "error": "CalledProcessError(128, \"fatal: bad revision 'HEAD'\\n\")",
+        "id": "fa4b355a7ac3ff5454bc1ef199b79c460be91460",
+        "time": "2026-02-26T16:36:53+01:00",
+        "author_time": "2026-02-26T16:36:53+01:00",
+        "dirty": true,
         "project": "graphix-mqtbench",
-        "branch": "(unknown)"
+        "branch": "main"
     },
     "benchmarks": [
         {
@@ -43,7 +42,8 @@
             "name": "test_simulator[benchmark_circuit0]",
             "fullname": "benchs/bench_simulators.py::Test::test_simulator[benchmark_circuit0]",
             "params": {
-                "benchmark_circuit": "UNSERIALIZABLE[Benchmark(name=<BenchmarkName.AE: 'ae'>, nqubits=3)]"
+                "benchmark_name": "ae",
+                "nqubits": 3
             },
             "param": "benchmark_circuit0",
             "extra_info": {},
@@ -56,22 +56,22 @@
                 "warmup": 100000
             },
             "stats": {
-                "min": 0.0018428330004098825,
-                "max": 0.007315834000110044,
-                "mean": 0.0028753710215262875,
-                "stddev": 0.000569446994347439,
-                "rounds": 603,
-                "median": 0.002791583001453546,
-                "iqr": 0.0005700207498193777,
-                "q1": 0.0025164374997075356,
-                "q3": 0.0030864582495269133,
-                "iqr_outliers": 19,
-                "stddev_outliers": 119,
-                "outliers": "119;19",
-                "ld15iqr": 0.0018428330004098825,
-                "hd15iqr": 0.003942833000110113,
-                "ops": 347.7812054561174,
-                "total": 1.7338487259803514,
+                "min": 0.001306041000134428,
+                "max": 0.0029791249999107094,
+                "mean": 0.001797432360972156,
+                "stddev": 0.00017133208295893205,
+                "rounds": 773,
+                "median": 0.0017946249990927754,
+                "iqr": 0.00022094800033300999,
+                "q1": 0.0016875102501217043,
+                "q3": 0.0019084582504547143,
+                "iqr_outliers": 16,
+                "stddev_outliers": 216,
+                "outliers": "216;16",
+                "ld15iqr": 0.001356750000923057,
+                "hd15iqr": 0.0022544170005858177,
+                "ops": 556.3491687993987,
+                "total": 1.3894152150314767,
                 "iterations": 1
             }
         },
@@ -80,7 +80,8 @@
             "name": "test_simulator[benchmark_circuit1]",
             "fullname": "benchs/bench_simulators.py::Test::test_simulator[benchmark_circuit1]",
             "params": {
-                "benchmark_circuit": "UNSERIALIZABLE[Benchmark(name=<BenchmarkName.DJ: 'dj'>, nqubits=3)]"
+                "benchmark_name": "dj",
+                "nqubits": 3
             },
             "param": "benchmark_circuit1",
             "extra_info": {},
@@ -93,26 +94,26 @@
                 "warmup": 100000
             },
             "stats": {
-                "min": 0.00011654100126179401,
-                "max": 0.001513874998636311,
-                "mean": 0.00016634598935293875,
-                "stddev": 6.031259983621961e-05,
-                "rounds": 7229,
-                "median": 0.0001449999999749707,
-                "iqr": 3.2375999580835924e-05,
-                "q1": 0.00014195800031302497,
-                "q3": 0.0001743339998938609,
-                "iqr_outliers": 617,
-                "stddev_outliers": 590,
-                "outliers": "590;617",
-                "ld15iqr": 0.00011654100126179401,
-                "hd15iqr": 0.0002229999990959186,
-                "ops": 6011.566638245093,
-                "total": 1.2025151570323942,
+                "min": 9.7707999884733e-05,
+                "max": 0.00024279200079035945,
+                "mean": 0.00010114336149318554,
+                "stddev": 4.817276621337463e-06,
+                "rounds": 10144,
+                "median": 9.983399922930403e-05,
+                "iqr": 2.5410008674953133e-06,
+                "q1": 9.933399996953085e-05,
+                "q3": 0.00010187500083702616,
+                "iqr_outliers": 471,
+                "stddev_outliers": 439,
+                "outliers": "439;471",
+                "ld15iqr": 9.7707999884733e-05,
+                "hd15iqr": 0.00010570799895504024,
+                "ops": 9886.956348265865,
+                "total": 1.0259982589868741,
                 "iterations": 1
             }
         }
     ],
-    "datetime": "2026-02-26T15:36:16.294262+00:00",
+    "datetime": "2026-02-26T15:57:25.855677+00:00",
     "version": "5.2.3"
 }

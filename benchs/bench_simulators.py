@@ -18,6 +18,10 @@ class Test:
     @pytest.mark.benchmark(group="statevector", max_time=1, min_rounds=5, warmup=True)
     @pytest.mark.parametrize("benchmark_circuit", _SHORT_BENCHMARKS)
     def test_simulator(self, benchmark: BenchmarkFixture, benchmark_circuit: Benchmark) -> None:
+        benchmark.params = {
+                "benchmark_name": benchmark_circuit.name,
+                "nqubits": benchmark_circuit.nqubits
+            }
 
         pattern = benchmark_circuit.to_pattern(pauli_presimulate=True, min_space=True)
 
