@@ -1,0 +1,118 @@
+{
+    "machine_info": {
+        "node": "MAC-02010036",
+        "processor": "arm",
+        "machine": "arm64",
+        "python_compiler": "Clang 14.0.6 ",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.13.5",
+        "python_version": "3.13.5",
+        "python_build": [
+            "main",
+            "Jun 12 2025 11:23:37"
+        ],
+        "release": "24.6.0",
+        "system": "Darwin",
+        "cpu": {
+            "python_version": "3.13.5.final.0 (64 bit)",
+            "cpuinfo_version": [
+                9,
+                0,
+                0
+            ],
+            "cpuinfo_version_string": "9.0.0",
+            "arch": "ARM_8",
+            "bits": 64,
+            "count": 10,
+            "arch_string_raw": "arm64",
+            "brand_raw": "Apple M4"
+        }
+    },
+    "commit_info": {
+        "id": "unknown",
+        "time": null,
+        "author_time": null,
+        "dirty": false,
+        "error": "CalledProcessError(128, \"fatal: bad revision 'HEAD'\\n\")",
+        "project": "graphix-mqtbench",
+        "branch": "(unknown)"
+    },
+    "benchmarks": [
+        {
+            "group": "statevector",
+            "name": "test_simulator[benchmark_circuit0]",
+            "fullname": "benchs/bench_simulators.py::Test::test_simulator[benchmark_circuit0]",
+            "params": {
+                "benchmark_circuit": "UNSERIALIZABLE[Benchmark(name=<BenchmarkName.AE: 'ae'>, nqubits=3)]"
+            },
+            "param": "benchmark_circuit0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": 100000
+            },
+            "stats": {
+                "min": 0.0018428330004098825,
+                "max": 0.007315834000110044,
+                "mean": 0.0028753710215262875,
+                "stddev": 0.000569446994347439,
+                "rounds": 603,
+                "median": 0.002791583001453546,
+                "iqr": 0.0005700207498193777,
+                "q1": 0.0025164374997075356,
+                "q3": 0.0030864582495269133,
+                "iqr_outliers": 19,
+                "stddev_outliers": 119,
+                "outliers": "119;19",
+                "ld15iqr": 0.0018428330004098825,
+                "hd15iqr": 0.003942833000110113,
+                "ops": 347.7812054561174,
+                "total": 1.7338487259803514,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "statevector",
+            "name": "test_simulator[benchmark_circuit1]",
+            "fullname": "benchs/bench_simulators.py::Test::test_simulator[benchmark_circuit1]",
+            "params": {
+                "benchmark_circuit": "UNSERIALIZABLE[Benchmark(name=<BenchmarkName.DJ: 'dj'>, nqubits=3)]"
+            },
+            "param": "benchmark_circuit1",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": 100000
+            },
+            "stats": {
+                "min": 0.00011654100126179401,
+                "max": 0.001513874998636311,
+                "mean": 0.00016634598935293875,
+                "stddev": 6.031259983621961e-05,
+                "rounds": 7229,
+                "median": 0.0001449999999749707,
+                "iqr": 3.2375999580835924e-05,
+                "q1": 0.00014195800031302497,
+                "q3": 0.0001743339998938609,
+                "iqr_outliers": 617,
+                "stddev_outliers": 590,
+                "outliers": "590;617",
+                "ld15iqr": 0.00011654100126179401,
+                "hd15iqr": 0.0002229999990959186,
+                "ops": 6011.566638245093,
+                "total": 1.2025151570323942,
+                "iterations": 1
+            }
+        }
+    ],
+    "datetime": "2026-02-26T15:36:16.294262+00:00",
+    "version": "5.2.3"
+}

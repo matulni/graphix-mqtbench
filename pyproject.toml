@@ -1,0 +1,142 @@
+[project]
+name = "graphix-mqtbench"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "matulni", email = "m.uldemolins@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "graphix",
+    "graphix-qasm-parser>=0.1.1",
+    "mqt-bench>=2.1.0",
+    "pandas>=3.0.1",
+    "pytest-benchmark>=5.2.3",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.6,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+graphix = { git = "https://github.com/TeamGraphix/graphix.git" }
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+    "mypy==1.19.1",
+    "pyright>=1.1.408",
+    "pytest>=9.0.2",
+    "ruff==0.15.2",
+]
+
+[tool.ruff]
+line-length = 120
+exclude = [
+  "examples",
+  "__init__.py",
+  "_version.py",
+  "setup.py"]
+
+[tool.ruff.lint]
+preview = true
+select = ["ALL"]
+extend-ignore = [
+  "C90",     # Complexity
+  "E74",     # Ambiguous name
+  "ERA",     # Commmented out code
+  "FBT",     # Boolean positional arguments
+  "FIX",     # Fixme
+  "PLR091",  # Too many XXX
+  "PLR0904", # Too many public methods
+  "PLR2004", # Magic vavlue comparison
+  "S101",    # assert
+  "T20",     # print
+  "TD",      # Todo
+
+  # Tentative ignores
+  "ANN",     # Missing annotations
+  "CPY",     # Copyright
+  "DOC",     # Docstring
+  "E501",    # Line too long
+  "EM10",    # Raise string
+  "PLR1702", # Too many nests
+  "PLW1641", # __hash__ missing
+  "PT011",   # pytest raises too broad
+  "SLF001",  # Private access
+  "TRY003",  # Raise vanilla args
+
+  # Conflicts with ruff format
+  "COM812",
+  "COM819",
+  "D206",
+  "D300",
+  "E111",
+  "E114",
+  "E117",
+  "ISC001",
+  "ISC002",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "W191",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.extend-per-file-ignores]
+
+"tests/*.py" = [
+  "D10",     # Allow undocumented items
+  "PLC2701", # Allow private imports
+  "PLR6301", # self not used
+]
+
+"benchmarks/*.py" = [
+  "D10",     # Allow undocumented items
+  "PLC2701", # Allow private imports
+  "PLR6301", # self not used
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.pytest]
+addopts = ["--ignore=examples", "--ignore=docs", "--benchmark-autosave"]
+
+[tool.mypy]
+# Keep in sync with pyright
+files = ["*.py"]
+exclude = [
+  "examples",
+  "__init__.py",
+  "_version.py",
+  "setup.py"]
+follow_imports = "silent"
+follow_untyped_imports = true # required for qiskit, requires mypy >=1.14
+strict = true
+#mypy_path = "./stubs"
+
+[tool.pyright]
+# Keep in sync with mypy
+include = ["*.py"]
+exclude = [
+  "examples",
+  "__init__.py",
+  "_version.py",
+  "setup.py"]
+reportUnknownArgumentType = "information"
+reportUnknownLambdaType = "information"
+reportUnknownMemberType = "information"
+reportUnknownParameterType = "information"
+reportUnknownVariableType = "information"
+extraPaths = ["./stubs"]
