@@ -20,12 +20,13 @@ requires = ["uv_build>=0.10.6,<0.11.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-graphix = { git = "https://github.com/TeamGraphix/graphix.git" }
+graphix = { path = "../../graphix", editable = true }
 
 [dependency-groups]
 dev = [
     "ipykernel>=7.2.0",
     "mypy==1.19.1",
+    "pylatexenc>=2.10",
     "pyright>=1.1.408",
     "pytest>=9.0.2",
     "ruff==0.15.2",
@@ -37,7 +38,8 @@ exclude = [
   "examples",
   "__init__.py",
   "_version.py",
-  "setup.py"]
+  "setup.py",
+  "*.ipynb",]
 
 [tool.ruff.lint]
 preview = true

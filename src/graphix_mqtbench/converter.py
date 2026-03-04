@@ -2,50 +2,52 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, assert_never
 
+import qiskit
 from graphix.instruction import InstructionKind
 from graphix_qasm_parser import OpenQASMParser
-from qiskit import QuantumCircuit, transpile
-from qiskit.qasm3 import dumps
+from qiskit.qasm3 import dumps as qiskit_qasm3_dumps
 
 if TYPE_CHECKING:
     from graphix import Circuit
 
 
-def graphix_native_gates_to_qiskit() -> list[str]:
-    """Get the list of Graphix native gates in terms of Qiskit gate names.
+def instruction_to_qiskit_gate(instr: InstructionKind) -> str:
+    match instr:
+        case (
+            InstructionKind.CCX
+            | InstructionKind.SWAP
+            | InstructionKind.CZ
+            | InstructionKind.H
+            | InstructionKind.S
+            | InstructionKind.X
+            | InstructionKind.Y
+            | InstructionKind.Z
+            | InstructionKind.RX
+            | InstructionKind.RY
+            | InstructionKind.RZ
+        ):
+            return instr.name.lower()
+        case InstructionKind.RZZ:
+            return "rrz"
+        case InstructionKind.CNOT:
+            return "cx"
+        case InstructionKind.I:
+            return "id"
+        case InstructionKind.M:
+            return "measure"
+        case _:
+            assert_never(instr)
 
-    To see the native gates of Graphix, see :func:`graphix.instruction.InstructionKind`.
-    Note that the RZZ gate is implemented using CRZ in Qiskit, so it is replaced accordingly.
-
-    Returns
-    -------
-    list[str]
-        A list of native gate names as recognized by Qiskit.
-    """
-    native_qiskit_gates = [instr.name.lower() for instr in InstructionKind]
-
-    # RZZ is implemented using CRZ
-    native_qiskit_gates.remove("rzz")
-    native_qiskit_gates.append("crz")
-
-    # m is implemented using measure
-    native_qiskit_gates.remove("m")
-    native_qiskit_gates.append("measure")
-
-    # i is implemented using identity
-    native_qiskit_gates.remove("i")
-    native_qiskit_gates.append("id")
-
-    # cnot is implemented using cx
-    native_qiskit_gates.remove("cnot")
-    native_qiskit_gates.append("cx")
-
-    return native_qiskit_gates
+# The qiskit transpiler does not support not standard gates (`rzz`). This could be explored further.
+# ValueError: Providing non-standard gates (rrz) through the ``basis_gates`` argument is not allowed. Use the ``target`` parameter instead. You can build a target instance using ``Target.from_configuration()`` and provide custom gate definitions with the ``custom_name_mapping`` argument.
 
 
-def convert(qiskit_circuit: QuantumCircuit) -> Circuit:
+_GRAPHIX_NATIVE_GATES = [instruction_to_qiskit_gate(instr) for instr in InstructionKind if instr != InstructionKind.RZZ]
+
+
+def qiskit_to_graphix_circuit(qiskit_circuit: qiskit.QuantumCircuit) -> Circuit:
     """Convert a Qiskit QuantumCircuit to a Graphix Circuit.
 
     Parameters
@@ -58,22 +60,21 @@ def convert(qiskit_circuit: QuantumCircuit) -> Circuit:
     Circuit
         The converted circuit in Graphix format.
     """
-    parser = OpenQASMParser()
-    transpiled_circuit = transpile(
+    transpiled_circuit = qiskit.transpile(
         qiskit_circuit,
-        basis_gates=list(graphix_native_gates_to_qiskit()),
+        basis_gates=_GRAPHIX_NATIVE_GATES,
         optimization_level=0,
     )
-
     # To ensure that the register names are compatible with the QASM parser,
     # we create a new QuantumCircuit and compose the transpiled circuit onto it
     # which effectively resets register names
-    transferred_circuit = QuantumCircuit(
+    transferred_circuit = qiskit.QuantumCircuit(
         transpiled_circuit.num_qubits,
         transpiled_circuit.num_clbits,
     )
     transferred_circuit.compose(transpiled_circuit, inplace=True)
 
-    qasm_str = dumps(transferred_circuit)
+    qasm_str = qiskit_qasm3_dumps(transferred_circuit)
 
+    parser = OpenQASMParser()
     return parser.parse_str(qasm_str)

@@ -5,15 +5,16 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from graphix.pattern import Pattern
-from graphix.transpiler import Circuit
 from mqt.bench import get_benchmark_indep
 
 from graphix_mqtbench._generated_benchmarks_enum import BenchmarkName
-from graphix_mqtbench.converter import convert
+from graphix_mqtbench.converter import qiskit_to_graphix_circuit
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
+
+    from graphix.pattern import Pattern
+    from graphix.transpiler import Circuit
 
 
 @dataclass
@@ -26,12 +27,12 @@ class Benchmark:
 
     def _validate(self) -> None:
         try:
-            self.to_circuit()
+            get_benchmark_indep(benchmark=self.name.value, circuit_size=self.nqubits)
         except Exception as e:
             raise ValueError(f"{self.name.value} benchmark does not exist for {self.nqubits} qubits.") from e
 
     def to_circuit(self) -> Circuit:
-        return convert(
+        return qiskit_to_graphix_circuit(
             get_benchmark_indep(benchmark=self.name.value, circuit_size=self.nqubits),
         )
 
@@ -95,8 +96,7 @@ class BenchmarkResult:
         return BenchmarkResult(benchmark, backend_name, stats_df)
 
 
-# TODO: better to take a lists of benchmarks
-def characterize_benchmarks(nqubits: int) -> pd.DataFrame:
+def characterize_all_benchmarks(nqubits: int) -> pd.DataFrame:
     rows = []
     for bench in BenchmarkName:
         try:
@@ -121,6 +121,12 @@ def characterize_benchmarks(nqubits: int) -> pd.DataFrame:
         rows.append(df)
 
     return beautify_benchmark_df(pd.concat(rows, ignore_index=True, sort=False))
+
+
+def characterize_benchmarks(benchmarks: Sequence[Benchmark]) -> pd.DataFrame:
+    return beautify_benchmark_df(
+        pd.concat([benchmark.characterize(beautify=False) for benchmark in benchmarks], ignore_index=True, sort=False)
+    )
 
 
 def beautify_benchmark_df(df: pd.DataFrame) -> pd.DataFrame:

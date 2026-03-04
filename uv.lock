@@ -361,8 +361,7 @@ wheels = [
 
 [[package]]
 name = "graphix"
-version = "0.3.5.dev13+gc7d462a08"
-source = { git = "https://github.com/TeamGraphix/graphix.git#c7d462a08b4a43e208cfd66da4380183c716578e" }
+source = { editable = "../../graphix" }
 dependencies = [
     { name = "matplotlib" },
     { name = "networkx" },
@@ -373,6 +372,47 @@ dependencies = [
     { name = "sympy" },
     { name = "typing-extensions" },
 ]
+
+[package.metadata]
+requires-dist = [
+    { name = "furo", marker = "extra == 'doc'" },
+    { name = "graphix-qasm-parser", marker = "extra == 'dev'", specifier = ">=0.1.1" },
+    { name = "joblib", marker = "extra == 'doc'" },
+    { name = "matplotlib" },
+    { name = "matplotlib", marker = "extra == 'doc'" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = "==1.19.1" },
+    { name = "networkx" },
+    { name = "nox", marker = "extra == 'dev'", specifier = "==2026.2.9" },
+    { name = "numba", marker = "extra == 'typing'", specifier = "==0.64.0" },
+    { name = "numpy", specifier = ">=2" },
+    { name = "numpy", marker = "extra == 'typing'", specifier = "==2.4.2" },
+    { name = "openqasm-parser", marker = "extra == 'dev'", specifier = ">=3.1.0" },
+    { name = "opt-einsum" },
+    { name = "pre-commit", marker = "extra == 'dev'" },
+    { name = "psutil", marker = "extra == 'dev'" },
+    { name = "pyright", marker = "extra == 'dev'" },
+    { name = "pytest", marker = "extra == 'dev'" },
+    { name = "pytest-benchmark", marker = "extra == 'dev'" },
+    { name = "pytest-cov", marker = "extra == 'dev'" },
+    { name = "pytest-mock", marker = "extra == 'dev'" },
+    { name = "pytest-mpl", marker = "extra == 'dev'" },
+    { name = "pyzx", marker = "extra == 'extra'", specifier = "==0.9.0" },
+    { name = "qiskit", marker = "extra == 'dev'", specifier = ">=1.0" },
+    { name = "qiskit-aer", marker = "python_full_version < '3.14' and extra == 'dev'" },
+    { name = "qiskit-qasm3-import", marker = "extra == 'dev'" },
+    { name = "quimb" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = "==0.15.4" },
+    { name = "scipy" },
+    { name = "scipy-stubs", marker = "extra == 'dev'" },
+    { name = "sphinx", marker = "extra == 'doc'" },
+    { name = "sphinx-gallery", marker = "extra == 'doc'" },
+    { name = "sympy" },
+    { name = "types-networkx", marker = "extra == 'dev'", specifier = "==3.6.1.20260210" },
+    { name = "types-psutil", marker = "extra == 'dev'" },
+    { name = "types-setuptools", marker = "extra == 'dev'" },
+    { name = "typing-extensions" },
+]
+provides-extras = ["dev", "extra", "doc", "typing"]
 
 [[package]]
 name = "graphix-mqtbench"
@@ -390,6 +430,7 @@ dependencies = [
 dev = [
     { name = "ipykernel" },
     { name = "mypy" },
+    { name = "pylatexenc" },
     { name = "pyright" },
     { name = "pytest" },
     { name = "ruff" },
@@ -397,7 +438,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "graphix", git = "https://github.com/TeamGraphix/graphix.git" },
+    { name = "graphix", editable = "../../graphix" },
     { name = "graphix-qasm-parser", specifier = ">=0.1.1" },
     { name = "mqt-bench", specifier = ">=2.1.0" },
     { name = "pandas", specifier = ">=3.0.1" },
@@ -408,6 +449,7 @@ requires-dist = [
 dev = [
     { name = "ipykernel", specifier = ">=7.2.0" },
     { name = "mypy", specifier = "==1.19.1" },
+    { name = "pylatexenc", specifier = ">=2.10" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "ruff", specifier = "==0.15.2" },
@@ -1158,6 +1200,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b014
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b", size = 1225217, upload-time = "2025-06-21T13:39:07.939Z" },
 ]
+
+[[package]]
+name = "pylatexenc"
+version = "2.10"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/ab/34ec41718af73c00119d0351b7a2531d2ebddb51833a36448fc7b862be60/pylatexenc-2.10.tar.gz", hash = "sha256:3dd8fd84eb46dc30bee1e23eaab8d8fb5a7f507347b23e5f38ad9675c84f40d3", size = 162597, upload-time = "2021-04-06T07:56:07.854Z" }
 
 [[package]]
 name = "pyparsing"

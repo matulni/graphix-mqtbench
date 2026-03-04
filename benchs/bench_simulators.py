@@ -12,16 +12,15 @@ if TYPE_CHECKING:
 
 
 class Test:
-    nqubits = 3
-    _SHORT_BENCHMARKS = (Benchmark(BenchmarkName.AE, nqubits), Benchmark(BenchmarkName.DJ, nqubits))
+    _SHORT_BENCHMARKS = (Benchmark(BenchmarkName.QFT, 14),)  # Benchmark(BenchmarkName.QFT, 6))
 
-    @pytest.mark.benchmark(group="statevector", max_time=1, min_rounds=5, warmup=True)
+    @pytest.mark.benchmark(max_time=1, min_rounds=3, warmup=True)
     @pytest.mark.parametrize("benchmark_circuit", _SHORT_BENCHMARKS)
     def test_simulator(self, benchmark: BenchmarkFixture, benchmark_circuit: Benchmark) -> None:
         benchmark.params = {"benchmark_name": benchmark_circuit.name, "nqubits": benchmark_circuit.nqubits}
         benchmark.extra_info = {"backend_name": "statevector"}
 
-        pattern = benchmark_circuit.to_pattern(pauli_presimulate=True, min_space=True)
+        pattern = benchmark_circuit.to_pattern(pauli_presimulate=False, min_space=False)
 
         def simulate():
             backend = StatevectorBackend()

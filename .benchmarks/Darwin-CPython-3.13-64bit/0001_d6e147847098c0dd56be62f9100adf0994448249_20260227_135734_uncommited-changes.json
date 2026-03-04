@@ -1,0 +1,83 @@
+{
+    "machine_info": {
+        "node": "MAC-02010036",
+        "processor": "arm",
+        "machine": "arm64",
+        "python_compiler": "Clang 14.0.6 ",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.13.5",
+        "python_version": "3.13.5",
+        "python_build": [
+            "main",
+            "Jun 12 2025 11:23:37"
+        ],
+        "release": "24.6.0",
+        "system": "Darwin",
+        "cpu": {
+            "python_version": "3.13.5.final.0 (64 bit)",
+            "cpuinfo_version": [
+                9,
+                0,
+                0
+            ],
+            "cpuinfo_version_string": "9.0.0",
+            "arch": "ARM_8",
+            "bits": 64,
+            "count": 10,
+            "arch_string_raw": "arm64",
+            "brand_raw": "Apple M4"
+        }
+    },
+    "commit_info": {
+        "id": "d6e147847098c0dd56be62f9100adf0994448249",
+        "time": "2026-02-26T21:29:21+01:00",
+        "author_time": "2026-02-26T21:29:21+01:00",
+        "dirty": true,
+        "project": "graphix-mqtbench",
+        "branch": "main"
+    },
+    "benchmarks": [
+        {
+            "group": null,
+            "name": "test_simulator[benchmark_circuit0]",
+            "fullname": "benchs/bench_simulators.py::Test::test_simulator[benchmark_circuit0]",
+            "params": {
+                "benchmark_name": "qft",
+                "nqubits": 8
+            },
+            "param": "benchmark_circuit0",
+            "extra_info": {
+                "backend_name": "statevector"
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": 100000
+            },
+            "stats": {
+                "min": 0.05791279200002464,
+                "max": 0.0602137920000132,
+                "mean": 0.05889814355555245,
+                "stddev": 0.0006948595955540233,
+                "rounds": 18,
+                "median": 0.05899904200009587,
+                "iqr": 0.0012916240002596169,
+                "q1": 0.05822466700010409,
+                "q3": 0.05951629100036371,
+                "iqr_outliers": 0,
+                "stddev_outliers": 7,
+                "outliers": "7;0",
+                "ld15iqr": 0.05791279200002464,
+                "hd15iqr": 0.0602137920000132,
+                "ops": 16.97846382979465,
+                "total": 1.0601665839999441,
+                "iterations": 1
+            }
+        }
+    ],
+    "datetime": "2026-02-27T13:57:42.291430+00:00",
+    "version": "5.2.3"
+}
