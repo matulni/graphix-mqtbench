@@ -4,14 +4,16 @@ import math
 from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
+from graphix.sim.statevec import StatevectorBackend
 from graphix.states import BasicStates
 from mqt.bench import get_benchmark_indep
 from qiskit.primitives import StatevectorSampler
 
-from graphix_mqtbench import Benchmark, BenchmarkName, OptimizationPass
+from graphix_mqtbench import Benchmark, BenchmarkName, BenchmarkRunner, OptimizationPass
 
 if TYPE_CHECKING:
     from graphix.transpiler import Circuit
+    from pytest_benchmark import BenchmarkFixture
 
 
 def prepare_benchmarks(nqubits: int) -> list[Benchmark | None]:
@@ -149,3 +151,23 @@ class TestBenchmark:
         pattern.minimize_space()
         assert pd["PM-max_space"][0] == pattern.max_space()
         assert pd["PM-n_commands"][0] == len(pattern)
+
+
+class TestBenchmarkRunner:
+    @pytest.mark.benchmark(max_time=1, min_rounds=3, warmup=True)
+    def test_benchmarkrunner(self, benchmark: BenchmarkFixture) -> None:
+
+        mqt_benchmark = Benchmark(BenchmarkName.AE, nqubits=4)
+        optim_pass = OptimizationPass.M
+        runner = BenchmarkRunner(
+            benchmark=mqt_benchmark,
+            benchmark_fixture=benchmark,
+            optim=optim_pass,
+            backend=StatevectorBackend(),
+            backend_name="test",
+        )
+        sv = runner.run()
+
+        sv_ref = mqt_benchmark.to_pattern(optim_pass).simulate_pattern()
+
+        assert sv.isclose(sv_ref)

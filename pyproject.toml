@@ -13,6 +13,7 @@ dependencies = [
     "mqt-bench>=2.1.0",
     "pandas>=3.0.1",
     "pytest-benchmark>=5.2.3",
+    "pytest-timeout>=2.4.0",
 ]
 
 [build-system]
@@ -114,6 +115,8 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.pytest]
 addopts = ["--ignore=examples", "--ignore=docs", "--benchmark-autosave"]
+python_classes = ["BenchTest", "Test"]
+python_functions = ["bench_*", "test_*"]
 
 [tool.mypy]
 # Keep in sync with pyright
