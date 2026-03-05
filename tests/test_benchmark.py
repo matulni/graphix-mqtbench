@@ -37,7 +37,7 @@ def simulate_circuit(bench: Benchmark, shots: int, seed: int) -> tuple[dict[str,
     result = sampler.run([qc_qiskit], shots=shots).result()[0].data
     counts_qiskit = getattr(result, creg_name).get_counts()
     prob_graphix = (
-        bench.to_circuit().simulate_statevector(input_state=BasicStates.ZERO).statevec.to_prob_dict(encoding="MSB")
+        bench.to_circuit().simulate_statevector(input_state=BasicStates.ZERO).statevec.to_prob_dict(encoding="LSB")
     )
 
     return counts_qiskit, prob_graphix
