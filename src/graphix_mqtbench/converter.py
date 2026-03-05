@@ -40,6 +40,7 @@ def instruction_to_qiskit_gate(instr: InstructionKind) -> str:
         case _:
             assert_never(instr)
 
+
 # The qiskit transpiler does not support not standard gates (`rzz`). This could be explored further.
 # ValueError: Providing non-standard gates (rrz) through the ``basis_gates`` argument is not allowed. Use the ``target`` parameter instead. You can build a target instance using ``Target.from_configuration()`` and provide custom gate definitions with the ``custom_name_mapping`` argument.
 

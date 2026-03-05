@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
 import pandas as pd
 from mqt.bench import get_benchmark_indep
 
@@ -11,10 +11,38 @@ from graphix_mqtbench._generated_benchmarks_enum import BenchmarkName
 from graphix_mqtbench.converter import qiskit_to_graphix_circuit
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Mapping
 
     from graphix.pattern import Pattern
+    from graphix.sim.base_backend import Backend
     from graphix.transpiler import Circuit
+    from pytest_benchmark import BenchmarkFixture
+
+
+class OptimizationPass(Enum):
+    """Optimization passes on the transpiled pattern."""
+
+    M = ("min_space",)
+    """Minimize space."""
+
+    P = ("pauli_presim",)
+    "Pauli-presimulate."
+
+    PM = ("pauli_presim", "min_space")
+    """Pauli-presimulate, then minimize space."""
+
+    def apply_optimization(self, pattern: Pattern) -> Pattern:
+        pattern = pattern.copy()
+
+        for step in self.value:
+            match step:
+                case "min_space":
+                    pattern.minimize_space()
+                case "pauli_presim":
+                    pattern.remove_input_nodes()
+                    pattern = pattern.infer_pauli_measurements()
+                    pattern.perform_pauli_measurements()
+        return pattern
 
 
 @dataclass
@@ -36,53 +64,52 @@ class Benchmark:
             get_benchmark_indep(benchmark=self.name.value, circuit_size=self.nqubits),
         )
 
-    def to_pattern(self, pauli_presimulate: bool = True, min_space: bool = True) -> Pattern:
+    def to_pattern(self, optim: OptimizationPass | None = None) -> Pattern:
         pattern = self.to_circuit().transpile().pattern
-
-        if pauli_presimulate:
-            pattern.remove_input_nodes()
-            pattern = pattern.infer_pauli_measurements()
-            pattern.perform_pauli_measurements()
-        if min_space:
-            pattern.minimize_space()
-
+        if optim is not None:
+            pattern = optim.apply_optimization(pattern)
         return pattern
 
-    def characterize(self, beautify: bool = True) -> pd.DataFrame:
-        data: dict[str, str | int] = {}
+    def characterize(self, pretty: bool = True) -> pd.DataFrame:
 
-        data["benchmark"] = self.name.value
-        data["nqubits"] = self.nqubits
+        # To avoid circular imports
+        from graphix_mqtbench import characterize_benchmark  # noqa: PLC0415
 
-        circuit = self.to_circuit()
-        data["n_gates"] = len(circuit.instruction)
+        return characterize_benchmark(self, pretty)
 
-        pattern = circuit.transpile().pattern
-        pattern.remove_input_nodes()
 
-        data["transp-max_space"] = pattern.max_space()
-        data["transp-n_commands"] = len(pattern)
+@dataclass
+class BenchmarkRunner:
+    benchmark: Benchmark
+    benchmark_fixture: BenchmarkFixture
+    optim: OptimizationPass | None
+    backend: Backend
+    backend_name: str
 
-        pattern = pattern.infer_pauli_measurements()
-        pattern.perform_pauli_measurements()
-        data["pauli_ps-max_space"] = pattern.max_space()
-        data["pauli_ps-n_commands"] = len(pattern)
+    def __post_init__(self) -> None:
+        self.annotate_fixture()
 
-        pattern.minimize_space()
-        data["sp_min-max_space"] = pattern.max_space()
-        data["sp_min-n_commands"] = len(pattern)
+    def annotate_fixture(self) -> None:
+        self.benchmark_fixture.params = {"benchmark_name": self.benchmark.name, "nqubits": self.benchmark.nqubits}
+        self.benchmark_fixture.extra_info = {
+            "backend_name": self.backend_name,
+            "optim": self.optim.name if self.optim is not None else None,
+        }
 
-        df = pd.DataFrame([data])
+    def run(self):
+        pattern = self.benchmark.to_pattern(self.optim)
 
-        if beautify:
-            return beautify_benchmark_df(df)
-        return df
+        def simulate():
+            backend = self.backend.__class__()  # Initialize the backend for each run.
+            return pattern.simulate_pattern(backend=backend)
+
+        return self.benchmark_fixture(simulate)
 
 
 @dataclass
 class BenchmarkResult:
     benchmark: Benchmark
-    backend_name: str
+    extra_info: dict[str, str]
     stats: pd.DataFrame
 
     @staticmethod
@@ -90,86 +117,7 @@ class BenchmarkResult:
         benchmark_name = BenchmarkName[data["params"]["benchmark_name"].upper()]
         nqubits = int(data["params"]["nqubits"])
         benchmark = Benchmark(benchmark_name, nqubits)
-        backend_name = data["extra_info"]["backend_name"]
+        extra_info = data["extra_info"]
         stats_df = pd.DataFrame([data["stats"]])
 
-        return BenchmarkResult(benchmark, backend_name, stats_df)
-
-
-def characterize_all_benchmarks(nqubits: int) -> pd.DataFrame:
-    rows = []
-    for bench in BenchmarkName:
-        try:
-            df = Benchmark(bench, nqubits).characterize(beautify=False)
-        except ValueError:
-            df = pd.DataFrame(
-                [
-                    {
-                        "benchmark": bench.name,
-                        "nqubits": nqubits,
-                        "n_gates": np.nan,
-                        "transp-max_space": np.nan,
-                        "transp-n_commands": np.nan,
-                        "pauli_ps-max_space": np.nan,
-                        "pauli_ps-n_commands": np.nan,
-                        "sp_min-max_space": np.nan,
-                        "sp_min-n_commands": np.nan,
-                    }
-                ]
-            )
-
-        rows.append(df)
-
-    return beautify_benchmark_df(pd.concat(rows, ignore_index=True, sort=False))
-
-
-def characterize_benchmarks(benchmarks: Sequence[Benchmark]) -> pd.DataFrame:
-    return beautify_benchmark_df(
-        pd.concat([benchmark.characterize(beautify=False) for benchmark in benchmarks], ignore_index=True, sort=False)
-    )
-
-
-def beautify_benchmark_df(df: pd.DataFrame) -> pd.DataFrame:
-    new_columns = []
-
-    for col in df.columns:
-        if col != "benchmark":
-            df[col] = df[col].astype("Int64")
-        if col in {"benchmark", "nqubits", "n_gates"}:
-            new_columns.append(("Circuit", col))
-        elif col.startswith("transp-"):
-            new_columns.append(("After transpilation", col.replace("transp-", "")))
-        elif col.startswith("pauli_ps-"):
-            new_columns.append(("After Pauli presimulation", col.replace("pauli_ps-", "")))
-        elif col.startswith("sp_min-"):
-            new_columns.append(("After space minimization", col.replace("sp_min-", "")))
-        else:
-            new_columns.append(("other", col))
-
-    df.columns = pd.MultiIndex.from_tuples(new_columns)
-    return df.rename(
-        columns={
-            "n_commands": "# Commands",
-            "max_space": "Max Space",
-            "n_gates": "# Gates",
-            "nqubits": "# Qubits",
-            "benchmark": "Benchmark",
-        },
-        level=1,
-    )
-
-
-def combine_benchmark_results(results: Sequence[BenchmarkResult]) -> pd.DataFrame:
-    rows = []
-
-    for r in results:
-        df = r.stats.copy()
-        df["Benchmark"] = r.benchmark.name.value
-        df["# Qubits"] = r.benchmark.nqubits
-        df["Backend"] = r.backend_name
-        rows.append(df)
-
-    long_df = pd.concat(rows, ignore_index=True)
-
-    # `swaplevel(axis=1)` places `Backend` above data.
-    return long_df.pivot_table(index=["Benchmark", "# Qubits"], columns="Backend", aggfunc="first").swaplevel(axis=1)
+        return BenchmarkResult(benchmark, extra_info, stats_df)
