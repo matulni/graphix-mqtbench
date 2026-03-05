@@ -11,7 +11,7 @@ from graphix_mqtbench._generated_benchmarks_enum import BenchmarkName
 from graphix_mqtbench.converter import qiskit_to_graphix_circuit
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
     from graphix.pattern import Pattern
     from graphix.sim.base_backend import Backend
@@ -70,12 +70,12 @@ class Benchmark:
             pattern = optim.apply_optimization(pattern)
         return pattern
 
-    def characterize(self, pretty: bool = True) -> pd.DataFrame:
+    def characterize(self, optim_passses: Sequence[OptimizationPass] = (), pretty: bool = True) -> pd.DataFrame:
 
         # To avoid circular imports
         from graphix_mqtbench import characterize_benchmark  # noqa: PLC0415
 
-        return characterize_benchmark(self, pretty)
+        return characterize_benchmark(self, optim_passses, pretty)
 
 
 @dataclass

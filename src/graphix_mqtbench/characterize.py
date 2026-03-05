@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 
 from graphix_mqtbench import Benchmark, BenchmarkResult, OptimizationPass
@@ -14,14 +13,33 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
     from graphix.pattern import Pattern
+    from graphix.transpiler import Circuit
 
 
-def characterize_benchmark(benchmark: Benchmark, pretty: bool = True) -> pd.DataFrame:
+def characterize_benchmark(
+    benchmark: Benchmark, optim_passes: Sequence[OptimizationPass] = (), pretty: bool = True
+) -> pd.DataFrame:
     data: dict[str, str | int] = {}
 
-    def add_data(name: str, pattern: Pattern) -> None:
-        data[f"{name}-max_space"] = pattern.max_space()
-        data[f"{name}-n_commands"] = len(pattern)
+    def compute_patterns(circuit: Circuit) -> dict[str, Pattern]:
+        base_pattern = circuit.transpile().pattern
+        patterns: dict[str, Pattern] = {"transp": base_pattern}
+        cache: dict[str, Pattern] = {}
+
+        for optim_pass in optim_passes:
+            if optim_pass.name not in cache:
+                name = ""
+                pattern = base_pattern
+                for op in optim_pass.name:
+                    name += op
+                    if name in cache:
+                        pattern = cache[name]
+                    else:
+                        cache[name] = OptimizationPass[name].apply_optimization(pattern)
+
+            patterns[optim_pass.name] = cache[optim_pass.name]
+
+        return patterns
 
     data["benchmark"] = benchmark.name.value
     data["nqubits"] = benchmark.nqubits
@@ -29,20 +47,11 @@ def characterize_benchmark(benchmark: Benchmark, pretty: bool = True) -> pd.Data
     circuit = benchmark.to_circuit()
     data["n_gates"] = len(circuit.instruction)
 
-    pattern = circuit.transpile().pattern
+    patterns = compute_patterns(circuit)
 
-    add_data("transp", pattern)
-
-    # If we iterate over all passes, we would be doing P twice.
-
-    optim = OptimizationPass.M
-    add_data(optim.name, optim.apply_optimization(pattern))
-
-    name = ""
-    for optim in (OptimizationPass.P, OptimizationPass.M):
-        pattern = optim.apply_optimization(pattern)
-        name += optim.name
-        add_data(name, pattern)
+    for name, pattern in patterns.items():
+        data[f"{name}-max_space"] = pattern.max_space()
+        data[f"{name}-n_commands"] = len(pattern)
 
     df = pd.DataFrame([data])
 
@@ -52,38 +61,37 @@ def characterize_benchmark(benchmark: Benchmark, pretty: bool = True) -> pd.Data
     return df
 
 
-def characterize_all_benchmarks(nqubits: int) -> pd.DataFrame:
-
-    empty_dict = {
-        f"{optim.name}-{field}": np.nan for optim in OptimizationPass for field in ["max_space", "n_commands"]
-    }
-
-    rows = []
-    for bench in BenchmarkName:
-        try:
-            df = Benchmark(bench, nqubits).characterize(pretty=False)
-        except ValueError:
-            df = pd.DataFrame(
-                [
-                    {
-                        "benchmark": bench.name,
-                        "nqubits": nqubits,
-                        "n_gates": np.nan,
-                        "transp-max_space": np.nan,
-                        "transp-n_commands": np.nan,
-                        **empty_dict,
-                    }
-                ]
-            )
-
-        rows.append(df)
-
-    return prettify_benchmark_df(pd.concat(rows, ignore_index=True, sort=False))
+def characterize_or_empty(
+    bench: BenchmarkName, nqubits: int, optim_passes: Sequence[OptimizationPass] = ()
+) -> pd.DataFrame:
+    try:
+        return Benchmark(bench, nqubits).characterize(optim_passses=optim_passes, pretty=False)
+    except ValueError:
+        return pd.DataFrame(
+            [
+                {
+                    "benchmark": bench.name,
+                    "nqubits": nqubits,
+                }
+            ]
+        )
 
 
-def characterize_benchmarks(benchmarks: Sequence[Benchmark]) -> pd.DataFrame:
+def characterize_all_benchmarks(nqubits: int, optim_passes: Sequence[OptimizationPass] = ()) -> pd.DataFrame:
+    rows = [characterize_or_empty(bench, nqubits, optim_passes) for bench in BenchmarkName]
+    df = pd.concat(rows, ignore_index=True, sort=False)
+    return prettify_benchmark_df(df)
+
+
+def characterize_benchmarks(
+    benchmarks: Sequence[Benchmark], optim_passes: Sequence[OptimizationPass] = ()
+) -> pd.DataFrame:
     return prettify_benchmark_df(
-        pd.concat([benchmark.characterize(pretty=False) for benchmark in benchmarks], ignore_index=True, sort=False)
+        pd.concat(
+            [benchmark.characterize(optim_passses=optim_passes, pretty=False) for benchmark in benchmarks],
+            ignore_index=True,
+            sort=False,
+        )
     )
 
 
@@ -127,8 +135,8 @@ def combine_benchmark_results(results: Sequence[BenchmarkResult]) -> pd.DataFram
         df = r.stats.copy()
         df["Benchmark"] = r.benchmark.name.value
         df["# Qubits"] = r.benchmark.nqubits
-        optim = f"-{r.extra_info['optim']}" if r.extra_info['optim'] else ""
-        df["Backend"] = r.extra_info['backend_name'] + optim
+        optim = f"-{r.extra_info['optim']}" if r.extra_info["optim"] else ""
+        df["Backend"] = r.extra_info["backend_name"] + optim
 
         rows.append(df)
 
@@ -143,11 +151,11 @@ def read_results(paths: Iterable[Path]) -> pd.DataFrame:
     for path in paths:
         with Path(path).open(encoding="utf-8") as f:
             data = json.load(f)
-        results.extend(BenchmarkResult.from_dict(data_dict) for data_dict in data['benchmarks'])
+        results.extend(BenchmarkResult.from_dict(data_dict) for data_dict in data["benchmarks"])
 
     return combine_benchmark_results(results)
 
 
 def read_all_benchmarks() -> pd.DataFrame:
     folder = Path.cwd() / ".benchmarks/"
-    return read_results(folder.rglob('*json'))
+    return read_results(folder.rglob("*json"))

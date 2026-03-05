@@ -29,5 +29,11 @@ class Test:
     @pytest.mark.parametrize("mqt_benchmark", prepare_benchmarks(5))
     def test_simulator(self, benchmark: BenchmarkFixture, mqt_benchmark: Benchmark) -> None:
         if mqt_benchmark is not None:
-            runner = BenchmarkRunner(benchmark=mqt_benchmark, benchmark_fixture=benchmark, optim=OptimizationPass.M, backend=StatevectorBackend(), backend_name="statevector")
+            runner = BenchmarkRunner(
+                benchmark=mqt_benchmark,
+                benchmark_fixture=benchmark,
+                optim=OptimizationPass.M,
+                backend=StatevectorBackend(),
+                backend_name="statevector",
+            )
             runner.run()

@@ -118,3 +118,34 @@ class TestBenchmark:
         s_ref = p_ref.simulate_pattern()
 
         assert s.isclose(s_ref)
+
+    def test_characterize(self) -> None:
+        nqubits = 4
+        bench = Benchmark(BenchmarkName.QFT, nqubits)
+        pd = bench.characterize(
+            optim_passses=[OptimizationPass.M, OptimizationPass.P, OptimizationPass.PM], pretty=False
+        )
+
+        circuit = bench.to_circuit()
+
+        assert pd["nqubits"][0] == nqubits
+        assert pd["n_gates"][0] == len(circuit.instruction)
+
+        pattern = circuit.transpile().pattern
+        assert pd["transp-max_space"][0] == pattern.max_space()
+        assert pd["transp-n_commands"][0] == len(pattern)
+
+        pattern_m = pattern.copy()
+        pattern_m.minimize_space()
+        assert pd["M-max_space"][0] == pattern_m.max_space()
+        assert pd["M-n_commands"][0] == len(pattern_m)
+
+        pattern.remove_input_nodes()
+        pattern = pattern.infer_pauli_measurements()
+        pattern.perform_pauli_measurements()
+        assert pd["P-max_space"][0] == pattern.max_space()
+        assert pd["P-n_commands"][0] == len(pattern)
+
+        pattern.minimize_space()
+        assert pd["PM-max_space"][0] == pattern.max_space()
+        assert pd["PM-n_commands"][0] == len(pattern)
