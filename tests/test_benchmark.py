@@ -156,14 +156,13 @@ class TestBenchmark:
 class TestBenchmarkRunner:
     @pytest.mark.benchmark(max_time=1, min_rounds=3, warmup=True)
     def test_benchmarkrunner(self, benchmark: BenchmarkFixture) -> None:
-
         mqt_benchmark = Benchmark(BenchmarkName.AE, nqubits=4)
         optim_pass = OptimizationPass.M
         runner = BenchmarkRunner(
             benchmark=mqt_benchmark,
             benchmark_fixture=benchmark,
             optim=optim_pass,
-            backend=StatevectorBackend(),
+            backend_generator=lambda _: StatevectorBackend(),
             backend_name="test",
         )
         sv = runner.run()

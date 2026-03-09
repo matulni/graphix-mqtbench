@@ -11,7 +11,7 @@ from graphix_mqtbench._generated_benchmarks_enum import BenchmarkName
 from graphix_mqtbench.converter import qiskit_to_graphix_circuit
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Callable, Mapping, Sequence
 
     from graphix.pattern import Pattern
     from graphix.sim.base_backend import Backend
@@ -83,7 +83,10 @@ class BenchmarkRunner:
     benchmark: Benchmark
     benchmark_fixture: BenchmarkFixture
     optim: OptimizationPass | None
-    backend: Backend
+    # TODO: It is weird that the backend generator always needs a pattern as argument
+    # This should only be the case if the backend preallocates memory.
+    # Maybe memory preallocation should be done at the level of `pattern.simulate`
+    backend_generator: Callable[[Pattern], Backend]  # returns a fresh backend
     backend_name: str
 
     def __post_init__(self) -> None:
@@ -100,7 +103,7 @@ class BenchmarkRunner:
         pattern = self.benchmark.to_pattern(self.optim)
 
         def simulate():
-            backend = self.backend.__class__()  # Initialize the backend for each run.
+            backend = self.backend_generator(pattern)  # Initialize the backend for each run.
             return pattern.simulate_pattern(backend=backend)
 
         return self.benchmark_fixture(simulate)

@@ -35,7 +35,7 @@ class BenchTest:  # We use this name to allow for discovery. See .toml
                 benchmark=mqt_benchmark,
                 benchmark_fixture=benchmark,
                 optim=OptimizationPass.M,
-                backend=StatevectorBackend(),
+                backend_generator=lambda _: StatevectorBackend(),
                 backend_name="statevector",
             )
             runner.run()
@@ -48,7 +48,7 @@ class BenchTest:  # We use this name to allow for discovery. See .toml
                 benchmark=mqt_benchmark,
                 benchmark_fixture=benchmark,
                 optim=OptimizationPass.M,
-                backend=DensityMatrixBackend(),
+                backend_generator=lambda _: DensityMatrixBackend(),
                 backend_name="density_matrix",
             )
             runner.run()
