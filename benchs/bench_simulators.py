@@ -6,21 +6,10 @@ import pytest
 from graphix.sim.density_matrix import DensityMatrixBackend
 from graphix.sim.statevec import StatevectorBackend
 
-from graphix_mqtbench import Benchmark, BenchmarkName, BenchmarkRunner, OptimizationPass
+from graphix_mqtbench import Benchmark, BenchmarkName, BenchmarkRunner, OptimizationPass, generate_benchmark_list
 
 if TYPE_CHECKING:
     from pytest_benchmark import BenchmarkFixture
-
-
-def prepare_benchmarks(nqubits: int) -> list[Benchmark | None]:
-    tests: list[Benchmark | None] = []
-    for bench in BenchmarkName:
-        try:
-            benchmark = Benchmark(bench, nqubits)
-        except ValueError:
-            benchmark = None
-        tests.append(benchmark)
-    return tests
 
 
 class BenchTest:  # We use this name to allow for discovery. See .toml
@@ -28,7 +17,7 @@ class BenchTest:  # We use this name to allow for discovery. See .toml
     nqubits = 6
 
     @pytest.mark.benchmark(max_time=1, min_rounds=3, warmup=True)
-    @pytest.mark.parametrize("mqt_benchmark", prepare_benchmarks(nqubits))
+    @pytest.mark.parametrize("mqt_benchmark", generate_benchmark_list(nqubits))
     def bench_statevector(self, benchmark: BenchmarkFixture, mqt_benchmark: Benchmark) -> None:
         if mqt_benchmark is not None:
             runner = BenchmarkRunner(
@@ -41,7 +30,7 @@ class BenchTest:  # We use this name to allow for discovery. See .toml
             runner.run()
 
     @pytest.mark.benchmark(max_time=1, min_rounds=3, warmup=True)
-    @pytest.mark.parametrize("mqt_benchmark", prepare_benchmarks(nqubits))
+    @pytest.mark.parametrize("mqt_benchmark", generate_benchmark_list(nqubits))
     def bench_density_matrix(self, benchmark: BenchmarkFixture, mqt_benchmark: Benchmark) -> None:
         if mqt_benchmark is not None:
             runner = BenchmarkRunner(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any
@@ -57,7 +58,7 @@ class Benchmark:
         try:
             get_benchmark_indep(benchmark=self.name.value, circuit_size=self.nqubits)
         except Exception as e:
-            raise ValueError(f"{self.name.value} benchmark does not exist for {self.nqubits} qubits.") from e
+            raise BenchmarkError(f"{self.name.value} benchmark does not exist for {self.nqubits} qubits.") from e
 
     def to_circuit(self) -> Circuit:
         return qiskit_to_graphix_circuit(
@@ -124,3 +125,15 @@ class BenchmarkResult:
         stats_df = pd.DataFrame([data["stats"]])
 
         return BenchmarkResult(benchmark, extra_info, stats_df)
+
+
+def generate_benchmark_list(nqubits: int) -> list[Benchmark]:
+    tests: list[Benchmark] = []
+    for bench in BenchmarkName:
+        with contextlib.suppress(BenchmarkError):
+            tests.append(Benchmark(bench, nqubits))
+    return tests
+
+
+class BenchmarkError(Exception):
+    """Exception subclass to handle benchmark errors."""

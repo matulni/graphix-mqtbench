@@ -8,6 +8,7 @@ import pandas as pd
 
 from graphix_mqtbench import Benchmark, BenchmarkResult, OptimizationPass
 from graphix_mqtbench._generated_benchmarks_enum import BenchmarkName
+from graphix_mqtbench.benchmark import BenchmarkError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -66,7 +67,7 @@ def characterize_or_empty(
 ) -> pd.DataFrame:
     try:
         return Benchmark(bench, nqubits).characterize(optim_passses=optim_passes, pretty=False)
-    except ValueError:
+    except BenchmarkError:
         return pd.DataFrame(
             [
                 {

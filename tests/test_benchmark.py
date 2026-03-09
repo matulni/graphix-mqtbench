@@ -9,22 +9,11 @@ from graphix.states import BasicStates
 from mqt.bench import get_benchmark_indep
 from qiskit.primitives import StatevectorSampler
 
-from graphix_mqtbench import Benchmark, BenchmarkName, BenchmarkRunner, OptimizationPass
+from graphix_mqtbench import Benchmark, BenchmarkName, BenchmarkRunner, OptimizationPass, generate_benchmark_list
 
 if TYPE_CHECKING:
     from graphix.transpiler import Circuit
     from pytest_benchmark import BenchmarkFixture
-
-
-def prepare_benchmarks(nqubits: int) -> list[Benchmark | None]:
-    tests: list[Benchmark | None] = []
-    for bench in BenchmarkName:
-        try:
-            benchmark = Benchmark(bench, nqubits)
-        except ValueError:
-            benchmark = None
-        tests.append(benchmark)
-    return tests
 
 
 def simulate_circuit(bench: Benchmark, shots: int, seed: int) -> tuple[dict[str, float], dict[str, float]]:
@@ -54,7 +43,7 @@ class TestBenchmark:
     ERR = 0.02
 
     @pytest.mark.skip(reason="debug")
-    @pytest.mark.parametrize("test_case", prepare_benchmarks(nqubits=2))
+    @pytest.mark.parametrize("test_case", generate_benchmark_list(nqubits=2))
     def test_qiskit_simulation_2(self, test_case: Benchmark | None) -> None:
         if test_case is not None:
             counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
@@ -63,7 +52,7 @@ class TestBenchmark:
                 assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
 
     @pytest.mark.skip(reason="debug")
-    @pytest.mark.parametrize("test_case", prepare_benchmarks(nqubits=3))
+    @pytest.mark.parametrize("test_case", generate_benchmark_list(nqubits=3))
     def test_qiskit_simulation_3(self, test_case: Benchmark | None) -> None:
         if test_case is not None:
             counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
@@ -72,7 +61,7 @@ class TestBenchmark:
                 assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
 
     @pytest.mark.skip(reason="debug")
-    @pytest.mark.parametrize("test_case", prepare_benchmarks(nqubits=4))
+    @pytest.mark.parametrize("test_case", generate_benchmark_list(nqubits=4))
     def test_qiskit_simulation_4(self, test_case: Benchmark | None) -> None:
         if test_case is not None:
             counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
