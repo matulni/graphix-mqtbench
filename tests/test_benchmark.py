@@ -44,30 +44,27 @@ class TestBenchmark:
 
     @pytest.mark.skip(reason="debug")
     @pytest.mark.parametrize("test_case", generate_benchmark_list(nqubits=2))
-    def test_qiskit_simulation_2(self, test_case: Benchmark | None) -> None:
-        if test_case is not None:
-            counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
+    def test_qiskit_simulation_2(self, test_case: Benchmark) -> None:
+        counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
 
-            for key, value in counts_qiskit.items():
-                assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
+        for key, value in counts_qiskit.items():
+            assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
 
     @pytest.mark.skip(reason="debug")
     @pytest.mark.parametrize("test_case", generate_benchmark_list(nqubits=3))
-    def test_qiskit_simulation_3(self, test_case: Benchmark | None) -> None:
-        if test_case is not None:
-            counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
+    def test_qiskit_simulation_3(self, test_case: Benchmark) -> None:
+        counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
 
-            for key, value in counts_qiskit.items():
-                assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
+        for key, value in counts_qiskit.items():
+            assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
 
     @pytest.mark.skip(reason="debug")
     @pytest.mark.parametrize("test_case", generate_benchmark_list(nqubits=4))
-    def test_qiskit_simulation_4(self, test_case: Benchmark | None) -> None:
-        if test_case is not None:
-            counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
+    def test_qiskit_simulation_4(self, test_case: Benchmark) -> None:
+        counts_qiskit, prob_graphix = simulate_circuit(test_case, self.SHOTS, self.SEED)
 
-            for key, value in counts_qiskit.items():
-                assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
+        for key, value in counts_qiskit.items():
+            assert math.isclose(prob_graphix[key], value / self.SHOTS, rel_tol=0, abs_tol=self.ERR)
 
     def test_to_pattern_m(self) -> None:
         b = Benchmark(BenchmarkName.QFT, 3)
