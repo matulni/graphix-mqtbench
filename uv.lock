@@ -383,6 +383,7 @@ name = "graphix-mqtbench"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "graphix" },
     { name = "graphix-qasm-parser" },
     { name = "mqt-bench" },
     { name = "pandas" },
@@ -402,6 +403,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "graphix", specifier = "==0.3.4" },
     { name = "graphix-qasm-parser", specifier = ">=0.1.1" },
     { name = "mqt-bench", specifier = ">=2.1.0" },
     { name = "pandas", specifier = ">=3.0.1" },
