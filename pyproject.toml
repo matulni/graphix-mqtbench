@@ -142,3 +142,6 @@ reportUnknownMemberType = "information"
 reportUnknownParameterType = "information"
 reportUnknownVariableType = "information"
 extraPaths = ["./stubs"]
+
+[tool.uv.sources]
+graphix = { git = "https://github.com/TeamGraphix/graphix.git", rev = "master" }

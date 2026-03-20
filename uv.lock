@@ -361,8 +361,8 @@ wheels = [
 
 [[package]]
 name = "graphix"
-version = "0.3.4"
-source = { registry = "https://pypi.org/simple" }
+version = "0.3.5.dev26+g13632b920"
+source = { git = "https://github.com/TeamGraphix/graphix.git?rev=master#13632b9208dfa7ab0123e2fe77e1f1fbdf7ec749" }
 dependencies = [
     { name = "matplotlib" },
     { name = "networkx" },
@@ -372,10 +372,6 @@ dependencies = [
     { name = "scipy" },
     { name = "sympy" },
     { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/85/5c/572a523f7abd7e6bbf6f0d54f6c671e98b7bb2a45ed0420b406eeb2d7522/graphix-0.3.4.tar.gz", hash = "sha256:32ac209447a4bfd5d45ad0dd00a191630b5e4cb09886d059cedcc76a5d75e895", size = 144532, upload-time = "2026-02-06T08:13:42.249Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/f8/6f418156926011aee0c6d8628f724d1352b742fc360d19dbe54b86828617/graphix-0.3.4-py3-none-any.whl", hash = "sha256:b4ba9d1816c9c8a31ce44f581db893705737591b5a86adb8d4e7891e2110463f", size = 161714, upload-time = "2026-02-06T08:13:40.817Z" },
 ]
 
 [[package]]
@@ -403,7 +399,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "graphix", specifier = "==0.3.4" },
+    { name = "graphix", git = "https://github.com/TeamGraphix/graphix.git?rev=master" },
     { name = "graphix-qasm-parser", specifier = ">=0.1.1" },
     { name = "mqt-bench", specifier = ">=2.1.0" },
     { name = "pandas", specifier = ">=3.0.1" },
