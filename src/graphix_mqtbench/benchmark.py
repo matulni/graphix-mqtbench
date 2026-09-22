@@ -53,6 +53,9 @@ class MQTBenchmark:
     4
     """
 
+    _raw_circuit: QuantumCircuit
+    _qiskit_circuit: QuantumCircuit
+
     def __init__(self, name: BenchmarkName, nqubits: int, **kwargs: Unpack[MQTBenchmarkKwargs]) -> None:
         self._name = name
         self._nqubits = nqubits
@@ -67,6 +70,9 @@ class MQTBenchmark:
             raise BenchmarkError(f"{name.value} benchmark is not available on graphix-mqtbench yet.")
         try:
             self._raw_circuit = get_benchmark_indep(benchmark=name.value, circuit_size=nqubits, **kwargs)
+            # Clear the layout before removing measurements to avoid qiskit warnings
+            self._qiskit_circuit = dag_to_circuit(circuit_to_dag(self._raw_circuit))  # type: ignore[no-untyped-call]
+            self._qiskit_circuit.remove_final_measurements()
         except Exception as e:
             # If a benchmark does not exist for a given number of qubits, it may raise several
             # different types of exceptions so we use a catch-all `Exception`.
@@ -117,6 +123,15 @@ class MQTBenchmark:
             Circuit as returned by :func:`mqt.bench.get_benchmark_indep`.
         """
         return self._raw_circuit
+
+    @property
+    def qiskit_circuit(self) -> QuantumCircuit:
+        """The Qiskit circuit prepared for benchmarking.
+
+        Some benchmarks are given with measurements at the end.
+        We remove them to obtain a statevector.
+        """
+        return self._qiskit_circuit
 
     @cached_property
     def qiskit_circuit(self) -> QuantumCircuit:

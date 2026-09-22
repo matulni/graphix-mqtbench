@@ -41,15 +41,30 @@ def instruction_to_qiskit_gate(instr: InstructionKind) -> str:
         case (
             InstructionKind.CCX
             | InstructionKind.SWAP
+            | InstructionKind.CSWAP
+            | InstructionKind.CY
             | InstructionKind.CZ
             | InstructionKind.H
             | InstructionKind.S
+            | InstructionKind.SDG
+            | InstructionKind.T
+            | InstructionKind.TDG
+            | InstructionKind.SX
+            | InstructionKind.SXDG
             | InstructionKind.X
             | InstructionKind.Y
             | InstructionKind.Z
+            | InstructionKind.P
+            | InstructionKind.U
             | InstructionKind.RX
             | InstructionKind.RY
             | InstructionKind.RZ
+            | InstructionKind.CP
+            | InstructionKind.CU
+            | InstructionKind.CRX
+            | InstructionKind.CRY
+            | InstructionKind.CRZ
+            | InstructionKind.GPHASE
         ):
             return instr.name.lower()
         case InstructionKind.RZZ:
@@ -62,6 +77,8 @@ def instruction_to_qiskit_gate(instr: InstructionKind) -> str:
             return "measure"
         case InstructionKind.J:
             raise ValueError("Qiskit does not have a native J gate.")
+        case InstructionKind.CJ:
+            raise ValueError("Qiskit does not have a native CJ gate.")
         case InstructionKind.CONDINSTR:
             raise ValueError("Conditional instructions are not part of the gate set.")
         case _:
@@ -75,7 +92,7 @@ def instruction_to_qiskit_gate(instr: InstructionKind) -> str:
 _GRAPHIX_NATIVE_GATES = [
     instruction_to_qiskit_gate(instr)
     for instr in InstructionKind
-    if instr not in {InstructionKind.RZZ, InstructionKind.J, InstructionKind.CONDINSTR}
+    if instr not in {InstructionKind.RZZ, InstructionKind.J, InstructionKind.CJ, InstructionKind.GPHASE, InstructionKind.CONDINSTR}
 ]
 
 

@@ -119,7 +119,7 @@ addopts = ["--ignore=examples", "--ignore=docs"]
 
 [tool.mypy]
 # Keep in sync with pyright
-files = ["*.py"]
+files = ["src", "tests"]
 exclude = [
   "examples",
   "__init__.py",
@@ -132,7 +132,7 @@ strict = true
 
 [tool.pyright]
 # Keep in sync with mypy
-include = ["*.py"]
+include = ["src", "tests"]
 exclude = [
   "examples",
   "__init__.py",
@@ -147,3 +147,4 @@ extraPaths = ["./stubs"]
 
 [tool.uv.sources]
 graphix = { git = "https://github.com/TeamGraphix/graphix.git", rev = "refs/pull/587/head" }
+graphix-qasm-parser = { git = "https://github.com/TeamGraphix/graphix-qasm-parser.git" }
