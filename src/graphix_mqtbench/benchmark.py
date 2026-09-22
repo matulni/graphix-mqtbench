@@ -134,21 +134,6 @@ class MQTBenchmark:
         return self._qiskit_circuit
 
     @cached_property
-    def qiskit_circuit(self) -> QuantumCircuit:
-        """The Qiskit circuit prepared for benchmarking.
-
-        Some benchmarks are given with measurements at the end.
-        We remove them to obtain a statevector.
-        """
-        qc_qiskit = self.raw_circuit
-
-        # Clear the layout before removing measurements to avoid qiskit warnings
-        qc_clean: QuantumCircuit = dag_to_circuit(circuit_to_dag(qc_qiskit))  # type: ignore[no-untyped-call]
-
-        qc_clean.remove_final_measurements()
-        return qc_clean
-
-    @cached_property
     def circuit(self) -> Circuit:
         """The benchmark circuit converted to a Graphix :class:`graphix.transpiler.Circuit`.
 

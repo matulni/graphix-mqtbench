@@ -8,7 +8,6 @@ authors = [
 ]
 requires-python = ">=3.10,<3.15"
 dependencies = [
-    "graphix>=0.4",
     "graphix-qasm-parser>=0.1.1",
     "mqt-bench==2.2.2",
 ]
@@ -31,7 +30,7 @@ dev = [
     "mypy==1.19.1",
     "pyright>=1.1.408",
     "pytest>=9.0.2",
-    "ruff==0.15.2",
+    "ruff>=0.16.2",
 ]
 
 [tool.ruff]
@@ -53,9 +52,9 @@ extend-ignore = [
   "FBT",     # Boolean positional arguments
   "FIX",     # Fixme
   "PLR091",  # Too many XXX
-  "PLR0904", # Too many public methods
-  "PLR2004", # Magic vavlue comparison
-  "S101",    # assert
+  "too-many-public-methods", # Too many public methods
+  "magic-value-comparison", # Magic vavlue comparison
+  "assert",    # assert
   "T20",     # print
   "TD",      # Todo
 
@@ -63,29 +62,29 @@ extend-ignore = [
   "ANN",     # Missing annotations
   "CPY",     # Copyright
   "DOC",     # Docstring
-  "E501",    # Line too long
+  "line-too-long",    # Line too long
   "EM10",    # Raise string
-  "PLR1702", # Too many nests
-  "PLW1641", # __hash__ missing
-  "PT011",   # pytest raises too broad
-  "SLF001",  # Private access
-  "TRY003",  # Raise vanilla args
+  "too-many-nested-blocks", # Too many nests
+  "eq-without-hash", # __hash__ missing
+  "pytest-raises-too-broad",   # pytest raises too broad
+  "private-member-access",  # Private access
+  "raise-vanilla-args",  # Raise vanilla args
 
   # Conflicts with ruff format
-  "COM812",
-  "COM819",
-  "D206",
-  "D300",
-  "E111",
-  "E114",
-  "E117",
-  "ISC001",
-  "ISC002",
-  "Q000",
-  "Q001",
-  "Q002",
-  "Q003",
-  "W191",
+  "missing-trailing-comma",
+  "prohibited-trailing-comma",
+  "docstring-tab-indentation",
+  "triple-single-quotes",
+  "indentation-with-invalid-multiple",
+  "indentation-with-invalid-multiple-comment",
+  "over-indented",
+  "single-line-implicit-string-concatenation",
+  "multi-line-implicit-string-concatenation",
+  "bad-quotes-inline-string",
+  "bad-quotes-multiline-string",
+  "bad-quotes-docstring",
+  "avoidable-escaped-quote",
+  "tab-indentation",
 ]
 
 [tool.ruff.format]
@@ -95,14 +94,14 @@ docstring-code-format = true
 
 "tests/*.py" = [
   "D10",     # Allow undocumented items
-  "PLC2701", # Allow private imports
-  "PLR6301", # self not used
+  "import-private-name", # Allow private imports
+  "no-self-use", # self not used
 ]
 
 "benchmarks/*.py" = [
   "D10",     # Allow undocumented items
-  "PLC2701", # Allow private imports
-  "PLR6301", # self not used
+  "import-private-name", # Allow private imports
+  "no-self-use", # self not used
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -146,5 +145,4 @@ reportUnknownVariableType = "information"
 extraPaths = ["./stubs"]
 
 [tool.uv.sources]
-graphix = { git = "https://github.com/TeamGraphix/graphix.git", rev = "refs/pull/587/head" }
-graphix-qasm-parser = { git = "https://github.com/TeamGraphix/graphix-qasm-parser.git" }
+graphix-qasm-parser = { git = "https://github.com/TeamGraphix/graphix-qasm-parser.git", rev = "refs/pull/17/head" }

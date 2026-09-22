@@ -75,19 +75,21 @@ for bench in benchmarks:
     p_pauli = p.infer_pauli_measurements().remove_pauli_measurements(copy=True)
     p_pauli_space = p_pauli.minimize_space(copy=True)
 
-    rows.append({
-        ("Circuit", "Benchmark"): bench.name.value,
-        ("Circuit", "Qubits"): bench.nqubits,
-        ("Circuit", "Gates"): len(bench.circuit.instruction),
-        ("Transpilation", "Max Space"): p.max_space(),
-        ("Transpilation", "Cmds"): len(p),
-        ("Space min.", "Max Space"): p_space.max_space(),
-        ("Space min.", "Cmds"): len(p_space),
-        ("Pauli removal", "Max Space"): p_pauli.max_space(),
-        ("Pauli removal", "Cmds"): len(p_pauli),
-        ("Pauli removal + Space min.", "Max Space"): p_pauli_space.max_space(),
-        ("Pauli removal + Space min.", "Cmds"): len(p_pauli_space),
-    })
+    rows.append(
+        {
+            ("Circuit", "Benchmark"): bench.name.value,
+            ("Circuit", "Qubits"): bench.nqubits,
+            ("Circuit", "Gates"): len(bench.circuit.instruction),
+            ("Transpilation", "Max Space"): p.max_space(),
+            ("Transpilation", "Cmds"): len(p),
+            ("Space min.", "Max Space"): p_space.max_space(),
+            ("Space min.", "Cmds"): len(p_space),
+            ("Pauli removal", "Max Space"): p_pauli.max_space(),
+            ("Pauli removal", "Cmds"): len(p_pauli),
+            ("Pauli removal + Space min.", "Max Space"): p_pauli_space.max_space(),
+            ("Pauli removal + Space min.", "Cmds"): len(p_pauli_space),
+        }
+    )
 
 df = pd.DataFrame(rows)
 df.columns = pd.MultiIndex.from_tuples(df.columns)
@@ -528,10 +530,13 @@ import numpy as np
 
 rng = np.random.default_rng(42)
 
+
 def simulate(pattern, backend):
     def run():
         return pattern.simulate_pattern(backend=backend, rng=rng)
+
     return run
+
 
 benchmark = MQTBenchmark(name=BenchmarkName.QFT, nqubits=14)
 pattern = benchmark.pattern.minimize_space()
@@ -541,11 +546,12 @@ timer = timeit.Timer(run)
 t = min(timer.repeat(number=1, repeat=5))
 
 print(
-f"Benchmark = {benchmark.name.value}\n\
+    f"Benchmark = {benchmark.name.value}\n\
 nqubits = {benchmark.nqubits}\n\
 max_space = {pattern.max_space()}\n\
 n_commands = {len(pattern)}\n\
-simulation time = {t:.5f} s")
+simulation time = {t:.5f} s"
+)
 ```
 
     Benchmark = qft
