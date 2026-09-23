@@ -145,4 +145,4 @@ reportUnknownVariableType = "information"
 extraPaths = ["./stubs"]
 
 [tool.uv.sources]
-graphix-qasm-parser = { git = "https://github.com/TeamGraphix/graphix-qasm-parser.git", rev = "refs/pull/17/head" }
+graphix-qasm-parser = { git = "https://github.com/matulni/graphix-qasm-parser.git", branch = "rnew-circuit-api" }
