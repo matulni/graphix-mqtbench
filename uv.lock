@@ -705,8 +705,8 @@ wheels = [
 
 [[package]]
 name = "graphix"
-version = "0.5.dev64+gdeab84713"
-source = { git = "https://github.com/TeamGraphix/graphix.git?branch=refs%2Fpull%2F587%2Fhead#deab847137c93845d759fb2310a5e159e422f753" }
+version = "0.3.5.dev174+gb2f3d9175"
+source = { git = "https://github.com/matulni/graphix.git?rev=b2f3d91#b2f3d91751e24459d07209824e4a1feb1a93c82f" }
 dependencies = [
     { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "matplotlib", version = "3.11.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -754,7 +754,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "graphix-qasm-parser", git = "https://github.com/TeamGraphix/graphix-qasm-parser.git?rev=refs%2Fpull%2F17%2Fhead" },
+    { name = "graphix-qasm-parser", git = "https://github.com/matulni/graphix-qasm-parser.git?branch=new-circuit-api" },
     { name = "mqt-bench", specifier = "==2.2.2" },
     { name = "pandas", marker = "extra == 'examples'", specifier = ">=2.3,<3" },
     { name = "qiskit", marker = "extra == 'typing'", specifier = "==2.3.1" },
@@ -772,8 +772,8 @@ dev = [
 
 [[package]]
 name = "graphix-qasm-parser"
-version = "0.1.2.dev20+g179e5adba"
-source = { git = "https://github.com/TeamGraphix/graphix-qasm-parser.git?rev=refs%2Fpull%2F17%2Fhead#179e5adba7350685b989e1f248820840a9430c7f" }
+version = "0.1.dev56+g2365fcad6"
+source = { git = "https://github.com/matulni/graphix-qasm-parser.git?branch=new-circuit-api#2365fcad62dd38b43e475a650e65573f4c2efe0d" }
 dependencies = [
     { name = "graphix" },
     { name = "openqasm-parser" },
